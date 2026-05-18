@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>kolko i krzyzyk</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../2.css">
+    </head>
+    <body>
+        <header>
+            <a class="menu" href="../omnie.html">o mnie</a> 
+            <a class="menu" href="../projekty.html">projekty </a>
+            <a class="menu" href="../index.html">strona glowna</a>
+        </header>
+        <button id="0" onclick="main(this.id)" class="rock board"></button>
+        <button id="1" onclick="main(this.id)" class="rock board"></button>
+        <button id="2" onclick="main(this.id)" class="rock board"></button><br>
+        <button id="3" onclick="main(this.id)" class="rock board"></button>
+        <button id="4" onclick="main(this.id)" class="rock board"></button>
+        <button id="5" onclick="main(this.id)" class="rock board"></button><br>
+        <button id="6" onclick="main(this.id)" class="rock board"></button>
+        <button id="7" onclick="main(this.id)" class="rock board"></button>
+        <button id="8" onclick="main(this.id)" class="rock board"></button><br>
+        <button onclick="restart()">restart</button> 
+        <button onclick="change_start()" id="change_start">zaczyna: gracz</button> <br>
+        <h1 id="win_message"></h1>
+        <footer>
+            <p>telefon: 123 456 789</p>
+            <p>email: tulin.pulin@tmail.pl</p>
+        </footer>
+        <script>
+            let board = ["","","","","","","","",""]
+            let robot_start = false
+            let ongoing = true
+
+            function place(pointer, symbol) { 
+                while (!board[pointer]) {
+                    board[pointer] = symbol
+                    document.getElementById("change_start").disabled = true
+                } 
+            }
+            function draw(board) {
+                let buttons = Array.from(document.getElementsByClassName("rock board"))
+                for (index = 0; index < 9; index++) {
+                    if (board[index]) {
+                        buttons[index].innerHTML = board[index]
+                        buttons[index].disabled = true
+                    }
+                }
+            }
+            function win(pointers) {
+                for (index = 0; index <3; index++) {
+                    document.getElementById(pointers[index]).className += " rock win"
+                }
+                let buttons = Array.from(document.getElementsByClassName("rock board"))
+                for (index = 0; index < 9; index++) {
+                    buttons[index].disabled = true
+                }
+            }
+            function check(step, condition_distance, min, max) {
+                for (pointer=min; pointer<max; pointer+=condition_distance) {
+                    if (board[pointer] != "" && board[pointer] == board[pointer+step] && board[pointer+step] == board[pointer+(step*2)]) {
+                        document.getElementById("win_message").innerHTML = (board[pointer] + " wygrywa")
+                        let win_pointers = [pointer, pointer+step, pointer+(step*2)]
+                        win(win_pointers)
+                        ongoing = false
+                    }        
+                }
+
+            }
+            function robot() {
+                let temp = []
+                for (index = 0; index < 9; index++) {
+                    if (board[index]) {
+                        continue
+                    } else { 
+                        temp.push(index)
+                    }
+                }
+                let robot_move = temp[Math.floor(Math.random()*(temp.length))]
+                board[robot_move] = "o"
+            }
+
+            function restart() {
+                location.reload()
+            }
+            function change_start() { 
+                let who_starts = document.getElementById("change_start")
+                robot_start = true
+                who_starts.innerHTML = "zaczyna: robot"
+                robot()
+                draw(board)
+                who_starts.disabled = true
+            
+            }
+
+            function main(id) {
+                place(id, "x")
+                
+                check(3,1,0,3)
+                check(1,3,0,7)
+                check(2,9,2,4)
+                check(4,9,0,9)
+
+                if (ongoing) {
+                    robot()
+                }
+
+                check(3,1,0,3)
+                check(1,3,0,7)
+                check(2,9,2,4)
+                check(4,9,0,9)
+                
+                draw(board)
+            }
+
+        </script>
+    </body>
+</html>
+
+
